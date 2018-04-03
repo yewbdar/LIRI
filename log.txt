@@ -1,0 +1,20 @@
+*********************************My Tweets*********************************
+#myfirstTweet
+#myfirstTweet yes this is my first tweet
+hello world
+I am a tweet
+i love tweet .
+Hello Twitter! #myfirstTweet
+*********************************Search Movie*********************************
+If you haven't watched "Mr. Nobody," then you should:
+<http://www.imdb.com/title/tt0485947/>
+It's on Netflix!
+*********************************Search Movie*********************************
+Title of the movie: The Notebook
+Year the movie came out: 2004
+Rotten Tomatoes Rating of the movie: 52%
+IMDB Rating of the movie: 7.9
+Country where the movie was produced: USA
+Language of the movie: English
+Plot of the movie: A poor yet passionate young man falls in love with a rich young woman, giving her a sense of freedom, but they are soon separated because of their social differences.
+Actors in the movie: Tim Ivey, Gena Rowlands, Starletta DuPois, James Garner
