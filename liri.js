@@ -10,11 +10,11 @@ var doWhatItIS = false;
 switch (command) {
     case 'my-tweets':
         tweets();
-        
+
         break;
 
     case 'spotify-this-song':
-    
+
         spotifyMusic();
 
         break;
@@ -32,48 +32,75 @@ switch (command) {
 }
 function tweets() {
     var loggingInfo = [];
+    console.log("*********************************My Tweets*********************************");
+
     loggingInfo.push("*********************************My Tweets*********************************")
 
-    var params = { screen_name: 'yewbdar GG', count: "20" };
-    client.get('statuses/user_timeline', params, function (error, tweets, response) {
-        if (!error) {
+    // var params = { screen_name: 'yewbdar GG', count: "20" };
+    client.get('statuses/user_timeline', { count: "20" }, function (error, tweets, response) {
+        if (error) throw error;
             for (var i = 0; i < tweets.length; i++) {
-                console.log(tweets[i].text);
-                loggingInfo.push(tweets[i].text)
+                var when = new Date(tweets[i].created_at).toGMTString()
+
+                console.log(when + " :" + tweets[i].text);
+
+                loggingInfo.push(when + " :" + tweets[i].text);
             }
             logging(loggingInfo);
-        }
+        
     });
 }
 function spotifyMusic(name) {
     var loggingInfo = [];
+    console.log("*********************************Search Music*********************************");
+
     loggingInfo.push("*********************************Search Music*********************************")
 
     if (doWhatItIS) {
         var musicTitle = name;
     }
     else {
-        var musicTitle = process.argv[3];
-    }
-    spotify.search({ type: 'artist', query: musicTitle }, function (err, data) {
-        if (err) {
-            return console.log('Error occurred: ' + err);
-        }
 
-        console.log(data);
-        doWhatItIS = false;
-    });
+        var musicTitle = process.argv;
+        musicTitle.splice(0,3);
+    }
+    if (musicTitle !== undefined || musicTitle.length>0) {
+        spotify.search({ type: 'track', query: musicTitle, limit: 1 }, function (err, data) {
+            if (err) throw err
+            var artistArry = [];
+            var data = data.tracks.items;
+
+            data[0].artists.forEach(element => {
+                artistArry.push(element.name)
+            });
+            console.log("Artist(s) :" + artistArry)
+            console.log("The song's name :" + data[0].name);
+            if (data[0].preview_url !== null) {
+                console.log("A preview link of the song :" + data[0].preview_url);
+            }
+            else { console.log("There is no preview link") }
+
+            console.log("Album :" + data[0].album.name);
+            
+            doWhatItIS = false;
+        });
+    }
+    else { console.log("insert the song !") }
 }
 
 function movie(movieName) {
     var loggingInfo = [];
-    loggingInfo.push("*********************************Search Movie*********************************")
+    console.log("*********************************Search Movie*********************************");
+
+    loggingInfo.push("*********************************Search Movie*********************************");
 
     if (doWhatItIS) {
         movie = movieName;
     }
     else {
-        var movie = process.argv[3];
+
+        //var movie = process.argv[3];
+        var movie = process.argv[3]
         for (var i = 4; i < process.argv.length; i++) {
 
             movie += "+" + process.argv[i];
@@ -86,7 +113,7 @@ function movie(movieName) {
 
         request("http://www.omdbapi.com/?t=" + movie + "=&plot=short&apikey=trilogy", function (error, response, body) {
             if (!error && response.statusCode === 200) {
-
+                // console.log(JSON.parse(body));
                 console.log("Title of the movie: " + JSON.parse(body).Title);
                 loggingInfo.push("Title of the movie: " + JSON.parse(body).Title);
                 console.log("Year the movie came out: " + JSON.parse(body).Year);
@@ -106,6 +133,7 @@ function movie(movieName) {
                 console.log("Actors in the movie: " + JSON.parse(body).Actors);
                 loggingInfo.push("Actors in the movie: " + JSON.parse(body).Actors);
             }
+            else{ throw error;}
             logging(loggingInfo);
             doWhatItIS = false;
         });
@@ -125,9 +153,7 @@ function doWhatItSays() {
     doWhatItIS = true;
     var fs = require("fs");
     fs.readFile("random.txt", "utf8", function (error, data) {
-        if (error) {
-            return console.log(error);
-        }
+        if (error) throw error;
 
         var dataArr = data.split(",")
         command = dataArr[0];
@@ -150,22 +176,18 @@ function doWhatItSays() {
     })
 }
 function logging(data) {
-    // As always, we grab the fs package to handle read/write
+
     var fs = require("fs");
 
-    // We then store the textfile filename given to us from the command line
     var textFile = process.argv[2];
 
-    // We then append the contents "Hello Kitty" into the file
-    // If the file didn't exist then it gets created on the fly.
     if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
             fs.appendFile("log.txt", data[i] + "\n", function (err) {
 
                 // If an error was experienced we say it.
-                if (err) {
-                    console.log(err);
-                }
+                if (err) throw err;
+                
             });
         }
 
